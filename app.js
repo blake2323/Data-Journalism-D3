@@ -16,7 +16,7 @@ var height = svgHeight - margin.top - margin.bottom;
 // Create an SVG wrapper, append an SVG group that will hold our chart,
 // and shift the latter by left and top margins.
 var svg = d3
-    //   correct tag?
+    
     .select("#scatter")
     .append("svg")
     .attr("width", svgWidth)
@@ -97,23 +97,23 @@ function updateToolTip(chosenXAxis, circlesGroup) {
     return circlesGroup;
   }
   
-  d3.csv("data.csv").then(function(healthData){
-
- 
-
-
-  // Retrieve data from the CSV file and execute everything below
-// d3.csv("data.csv", function(err, healthData) {
-//     if (err) throw err;
-//     console.log("datatest", healthData)
   
-    // parse data
+  // Retrieve data from the CSV file and execute everything below
+
+d3.csv("data.csv").then(function(healthData){
+    
+  // parse data
     healthData.forEach(function(data) {
       data.age = +data.age;
       data.obesity = +data.obesity;
       data.smokes = +data.smokes;
+      
+      // Print ages to console for examination
+      console.log(data.age)
     });
   
+    // Print 'healthData' to console to verify import of csv
+    console.log(healthData);
     // xLinearScale function above csv import
     var xLinearScale = xScale(healthData, chosenXAxis);
   
@@ -136,7 +136,33 @@ var xAxis = chartGroup.append("g")
 chartGroup.append("g")
 .call(leftAxis);
 
-// append initial circles
+// var elem = chartGroup.selectAll("g").data(healthData);
+
+// var elemEnter = elem.enter().append("g")
+// .attr("cx", d => xLinearScale(d[chosenXAxis]))
+// .attr("cy", d => yLinearScale(d.obesity));
+
+// var circle = elemEnter
+// .append("circle")
+// .attr("r", 20)
+// .attr("fill", "blue")
+// .attr("opacity", "0.4");
+
+// var stateLabel = elemEnter
+// .append("text")
+// .text(function(d){
+//    return (d.abbr)
+// });
+
+
+// // append initial circles
+// // var circlesGroup = circleSpaceGroup.selectAll("circle")
+
+//NOTE: I realize that at this point in the code I had to create a group
+// to refer to the location for the 'circle' and corresponding 'text'
+// Since the variable 'circlesGroup' is called many places in this file,
+// only the location of the circles gets updated (and not the text)
+
 var circlesGroup = chartGroup.selectAll("circle")
 .data(healthData)
 .enter()
@@ -146,6 +172,49 @@ var circlesGroup = chartGroup.selectAll("circle")
 .attr("r", 20)
 .attr("fill", "pink")
 .attr("opacity", ".5");
+
+var textGroup = chartGroup.selectAll("text")
+.data(healthData)
+.enter()
+.append("text")
+.attr("dx", d => xLinearScale(d[chosenXAxis]))
+.attr("dy", d => yLinearScale(d.obesity))
+.text(d => d.abbr)
+.attr("fill", "black")
+.attr("font-size", "12px")
+.attr("text-anchor", "middle");
+
+// .selectAll("text")
+// .data(healthData)
+// .enter()
+// .append("text")
+// .text(function(d){
+//   return (d.abbr)
+// })
+// .attr("cx", d => xLinearScale(d[chosenXAxis]))
+// .attr("cy", d => yLinearScale(d.obesity))
+// .attr("fill", "black")
+// .attr("font-size", "12px")
+// .attr("stroke-width", 1)
+// ;
+
+// var textGroup = chartGroup.selectAll("text")
+// .data(healthData)
+// .enter()
+// .append("text")
+// .text(function(d){
+//   return (d.abbr)
+// })
+// .attr("cx", d => xLinearScale(d[chosenXAxis]))
+// .attr("cy", d => yLinearScale(d.obesity))
+// .attr("fill", "black")
+// .attr("font-size", "12px")
+// .attr("stroke-width", 0)
+// ;
+
+
+
+
 
 // Create group for  2 x- axis labels
 var labelsGroup = chartGroup.append("g")
@@ -176,6 +245,7 @@ var ageLabel = labelsGroup.append("text")
 
   // updateToolTip function above csv import
   var circlesGroup = updateToolTip(chosenXAxis, circlesGroup);
+
 
   // x axis labels event listener
   labelsGroup.selectAll("text")
